@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:githubapp/page/dynamic_page.dart';
+import 'package:githubapp/page/dynamic/dynamic_page.dart';
 import 'package:githubapp/page/mine_page.dart';
 import 'package:githubapp/page/trend_page.dart';
 import 'package:githubapp/widget/home_drawer.dart';
