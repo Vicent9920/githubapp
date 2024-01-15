@@ -1,4 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
+import 'package:githubapp/page/dynamic_page.dart';
+import 'package:githubapp/page/mine_page.dart';
+import 'package:githubapp/page/trend_page.dart';
 import 'package:githubapp/widget/home_drawer.dart';
 
 import 'entity/dynamic_data.dart';
@@ -13,6 +17,10 @@ class MyApp extends StatelessWidget {
   // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
+    // 设置底部导航栏颜色
+    SystemChrome.setSystemUIOverlayStyle(const SystemUiOverlayStyle(
+      systemNavigationBarColor: Color(0xff24292E), // 设置底部导航栏颜色
+    ));
     return MaterialApp(
       title: 'Flutter Demo',
       theme: ThemeData(
@@ -20,6 +28,7 @@ class MyApp extends StatelessWidget {
         useMaterial3: true,
       ),
       home: const MyHomePage(title: 'GsyGithubApp'),
+      color: const Color(0xff24292E),
     );
   }
 }
@@ -58,70 +67,64 @@ class _MyHomePageState extends State<MyHomePage> {
   ];
   int currentIndex = 0;
 
+  late PageController _controller;
+
+  @override
+  void initState() {
+    _controller = PageController();
+    super.initState();
+  }
 
   @override
   Widget build(BuildContext context) {
-    var list = _buildData();
+    // var list = _buildData();
     return Scaffold(
-      appBar: AppBar(
-        backgroundColor: const Color(0xff24292E),
-        title: Text(widget.title, style: const TextStyle(color: Colors.white)),
-        actions: [
-          Row(
-            children: [
-              InkWell(
-                  onTap: () {},
-                  child: const Icon(IconData(0xe61c, fontFamily: "wxcIconFont"),
-                      color: Colors.white)),
-              const SizedBox(width: 20),
-            ],
-          )
-        ],
-      ),
-      drawer: const HomeDrawer(),
-      body: ListView.builder(itemBuilder: (BuildContext context, int index){
-        return Container(
-          child: Column(
-            children: [
-              Row(
-                children: [
-                  Image.network(list[index].avatar_url),
-                  Text(list[index].display_login),
-                  Expanded(child: Container(),),
-                  Text(list[index].created_at)
-                ],
-              ),
-              Text(list[index].name)
+      backgroundColor: const Color(0xff24292E),
+        appBar: AppBar(
+          iconTheme: const IconThemeData(color: Colors.white), // 修改默认图标颜色
+          backgroundColor: const Color(0xff24292E),
+          title:
+              Text(widget.title, style: const TextStyle(color: Colors.white)),
+          actions: [
+            Row(
+              children: [
+                InkWell(
+                    onTap: () {},
+                    child: const Icon(
+                        IconData(0xe61c, fontFamily: "wxcIconFont"))),
+                const SizedBox(width: 20),
+              ],
+            )
+          ],
+        ),
+        drawer: const HomeDrawer(),
+        body: PageView(
+          onPageChanged: (value) {
+            setState(() {
+              currentIndex = value;
+            });
+          },
+          controller: _controller,
+          children: const [DynamicPage(), TrendPage(), MinePage()],
+        ),
 
-            ],
-          ),
-        );
-      },itemCount: list.length),
-      bottomNavigationBar: BottomNavigationBar(
-        backgroundColor: const Color(0xff24292E),
-        items: bottomNavItems,
-        type: BottomNavigationBarType.fixed,
-        fixedColor: Colors.white,
-        unselectedItemColor: const Color(0xffBDBEC0),
-        currentIndex: currentIndex,
-        onTap: (value) {
-          setState(() {
-            currentIndex = value;
-          });
-        },
-      )
-    );
+        bottomNavigationBar: BottomNavigationBar(
+          backgroundColor: const Color(0xff24292E),
+          items: bottomNavItems,
+          type: BottomNavigationBarType.fixed,
+          fixedColor: Colors.white,
+          unselectedItemColor: const Color(0xffBDBEC0),
+          currentIndex: currentIndex,
+          onTap: (value){
+            if (currentIndex != value) {
+              _controller.jumpToPage(value);
+              setState(() {
+                currentIndex = value;
+              });
+            }
+          },
+        ));
   }
 
-  List<DynamicData> _buildData(){
-    List<DynamicData> list = [];
-    list.add(DynamicData("DLNA-Cast","https://avatars.githubusercontent.com/u/3939365?","devin1014/DLNA-Cast","2023-12-16T13:25:09Z"));
-    list.add(DynamicData("DLNA-Cast","https://avatars.githubusercontent.com/u/3939365?","devin1014/DLNA-Cast","2023-12-16T13:25:09Z"));
-    list.add(DynamicData("DLNA-Cast","https://avatars.githubusercontent.com/u/3939365?","devin1014/DLNA-Cast","2023-12-16T13:25:09Z"));
-    list.add(DynamicData("DLNA-Cast","https://avatars.githubusercontent.com/u/3939365?","devin1014/DLNA-Cast/devin1014/DLNA-Cast/devin1014/DLNA-Cast/devin1014/DLNA-Cast","2023-12-16T13:25:09Z"));
-    list.add(DynamicData("DLNA-Cast","https://avatars.githubusercontent.com/u/3939365?","devin1014/DLNA-Cast","2023-12-16T13:25:09Z"));
-    list.add(DynamicData("DLNA-Cast","https://avatars.githubusercontent.com/u/3939365?","devin1014/DLNA-Cast","2023-12-16T13:25:09Z"));
-    return list;
-  }
 
 }
